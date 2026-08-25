@@ -1,1 +1,643 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAKEHI CREDIT シミュレーター v1.7.0</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f1115;
+            --card-bg: #181b22;
+            --accent-gold: #c5a059;
+            --accent-gold-light: #e5c583;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --border-color: #2a2e39;
+            --input-bg: #0f1115;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 36px 28px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .header .brand {
+            font-family: 'Cinzel', serif;
+            letter-spacing: 3px;
+            font-size: 13px;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper span.unit {
+            position: absolute;
+            right: 16px;
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 12px 40px 12px 16px;
+            font-size: 17px;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 2px rgba(197, 160, 89, 0.2);
+        }
+
+        .grid-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .btn-pay, .btn-skip, .btn-unequal {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 9px 4px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .btn-pay .base-count {
+            font-size: 10px;
+            opacity: 0.75;
+            margin-left: 2px;
+            font-weight: normal;
+        }
+
+        .btn-pay:hover, .btn-skip:hover, .btn-unequal:hover {
+            border-color: var(--accent-gold);
+            color: var(--text-primary);
+        }
+
+        .btn-pay.active, .btn-skip.active, .btn-unequal.active {
+            background: var(--accent-gold);
+            color: #0f1115;
+            border-color: var(--accent-gold);
+            font-weight: 700;
+        }
+
+        .btn-pay.active .base-count {
+            color: #0f1115;
+            opacity: 0.85;
+        }
+
+        .toggle-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .toggle-bar:hover {
+            border-color: var(--accent-gold);
+            background: rgba(197, 160, 89, 0.05);
+        }
+
+        .toggle-title {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .toggle-status {
+            font-size: 12px;
+            color: var(--accent-gold);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .arrow-icon {
+            font-size: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .arrow-icon.open {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin-top 0.3s ease;
+            opacity: 0;
+            margin-top: 0;
+        }
+
+        .collapsible-container.open {
+            max-height: 200px;
+            opacity: 1;
+            margin-top: 10px;
+        }
+
+        .results {
+            background: rgba(197, 160, 89, 0.05);
+            border: 1px solid rgba(197, 160, 89, 0.2);
+            border-radius: 12px;
+            padding: 20px 20px;
+            margin-top: 24px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 14px;
+        }
+
+        .result-row:last-child {
+            margin-bottom: 0;
+            padding-top: 14px;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .result-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .result-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .result-value.highlight {
+            font-size: 24px;
+            color: var(--accent-gold-light);
+        }
+
+        .result-value span {
+            font-size: 13px;
+            font-weight: 400;
+            margin-left: 2px;
+            color: var(--text-secondary);
+        }
+
+        .info-badge {
+            font-size: 12px;
+            color: var(--accent-gold-light);
+            background: rgba(197, 160, 89, 0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 14px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .note {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 16px;
+            text-align: center;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="brand">Credit Payment Simulator</div>
+        <h1>KAKEHI CREDIT</h1>
+    </div>
+
+    <!-- 利用金額 -->
+    <div class="form-group">
+        <label class="label" for="amount">利用金額（税込）</label>
+        <div class="input-wrapper">
+            <input type="text" id="amount" inputmode="numeric" placeholder="金額を入力" value="">
+            <span class="unit">円</span>
+        </div>
+    </div>
+
+    <!-- スキップ期間 -->
+    <div class="form-group">
+        <div class="toggle-bar" onclick="toggleMenu('skip')">
+            <span class="toggle-title">スキップ期間（支払据置）を設定する</span>
+            <span class="toggle-status">
+                <span id="skipStatusText">なし</span>
+                <span class="arrow-icon" id="skipArrow">▼</span>
+            </span>
+        </div>
+        <div class="collapsible-container" id="skipContainer">
+            <div class="grid-options" id="skipSelect">
+                <button class="btn-skip active" onclick="selectSkip(0)">なし</button>
+                <button class="btn-skip" onclick="selectSkip(1)">1ヶ月</button>
+                <button class="btn-skip" onclick="selectSkip(2)">2ヶ月</button>
+                <button class="btn-skip" onclick="selectSkip(3)">3ヶ月</button>
+                <button class="btn-skip" onclick="selectSkip(4)">4ヶ月</button>
+                <button class="btn-skip" onclick="selectSkip(5)">5ヶ月</button>
+                <button class="btn-skip" onclick="selectSkip(6)">6ヶ月</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 不均等払い -->
+    <div class="form-group">
+        <div class="toggle-bar" onclick="toggleMenu('unequal')">
+            <span class="toggle-title">不均等払い（特別指定額）を設定する</span>
+            <span class="toggle-status">
+                <span id="unequalStatusText">なし</span>
+                <span class="arrow-icon" id="unequalArrow">▼</span>
+            </span>
+        </div>
+        <div class="collapsible-container" id="unequalContainer">
+            <label class="label" style="margin-top: 4px;">特別支払期間（指定金額で支払う期間）</label>
+            <div class="grid-options" id="unequalSelect">
+                <button class="btn-unequal active" onclick="selectUnequalMonths(0)">なし</button>
+                <button class="btn-unequal" onclick="selectUnequalMonths(1)">1ヶ月</button>
+                <button class="btn-unequal" onclick="selectUnequalMonths(2)">2ヶ月</button>
+                <button class="btn-unequal" onclick="selectUnequalMonths(3)">3ヶ月</button>
+                <button class="btn-unequal" onclick="selectUnequalMonths(4)">4ヶ月</button>
+                <button class="btn-unequal" onclick="selectUnequalMonths(5)">5ヶ月</button>
+                <button class="btn-unequal" onclick="selectUnequalMonths(6)">6ヶ月</button>
+            </div>
+            <div id="unequalAmountWrapper" style="margin-top: 12px; display: none;">
+                <label class="label" for="unequalAmount">特別支払期間の月々支払額</label>
+                <div class="input-wrapper">
+                    <input type="text" id="unequalAmount" inputmode="numeric" placeholder="例: 5,000" value="">
+                    <span class="unit">円</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 分割回数 -->
+    <div class="form-group">
+        <label class="label">分割回数（カッコ内は元のコース枠）</label>
+        <div class="grid-options" id="payGrid">
+        </div>
+    </div>
+
+    <!-- 実質年率 -->
+    <div class="form-group" style="margin-bottom: 12px;">
+        <label class="label" for="feeRate">実質年率（手数料率）</label>
+        <div class="input-wrapper">
+            <input type="number" id="feeRate" value="7.0" step="0.1" min="0" max="30">
+            <span class="unit">%</span>
+        </div>
+    </div>
+
+    <!-- 結果表示 -->
+    <div class="results">
+        <div id="infoBadge" class="info-badge" style="display: none;"></div>
+        
+        <!-- ご利用金額 -->
+        <div class="result-row">
+            <div class="result-label">ご利用金額</div>
+            <div class="result-value" id="principalPay">0 <span>円</span></div>
+        </div>
+
+        <!-- 不均等払い設定時: 特別額 -->
+        <div id="unequalResultRow" class="result-row" style="display: none;">
+            <div class="result-label" id="unequalResultLabel">1〜3ヶ月目（特別額）</div>
+            <div class="result-value" id="unequalPay">0 <span>円</span></div>
+        </div>
+
+        <!-- 不均等払い設定時: 端数調整月 -->
+        <div id="adjustedResultRow" class="result-row" style="display: none;">
+            <div class="result-label" id="adjustedResultLabel">4ヶ月目</div>
+            <div class="result-value" id="adjustedPay">0 <span>円</span></div>
+        </div>
+
+        <!-- 通常設定時: 初回お支払額 -->
+        <div id="firstPayRow" class="result-row">
+            <div class="result-label">初回お支払額</div>
+            <div class="result-value" id="firstPay">0 <span>円</span></div>
+        </div>
+
+        <!-- 月々のお支払額 -->
+        <div class="result-row">
+            <div class="result-label" id="monthlyResultLabel">2回目以降（月々）</div>
+            <div class="result-value highlight" id="monthlyPay">0 <span>円</span></div>
+        </div>
+
+        <!-- 分割手数料 -->
+        <div class="result-row">
+            <div class="result-label">分割手数料</div>
+            <div class="result-value" id="feePay">0 <span>円</span></div>
+        </div>
+
+        <!-- お支払総額 -->
+        <div class="result-row">
+            <div class="result-label">お支払総額</div>
+            <div class="result-value" id="totalPay" style="font-size:18px;">0 <span>円</span></div>
+        </div>
+    </div>
+
+    <div class="note">
+        ※ 月々のお支払額は100円単位（100円未満切り捨て）で算出しています。<br>
+        ※ 端数は特別額または初回お支払額直後の支払額に加算されます。
+    </div>
+</div>
+
+<script>
+    const baseTotalMonths = [3, 6, 10, 12, 18, 24, 36, 48];
+    let selectedIndex = 3; 
+    let currentSkipMonths = 0;
+    let currentUnequalMonths = 0;
+
+    let isSkipOpen = false;
+    let isUnequalOpen = false;
+
+    function formatNumberInput(input) {
+        const value = input.value.replace(/,/g, '');
+        if (!isNaN(value) && value !== '') {
+            input.value = Number(value).toLocaleString('en-US');
+        } else if (value === '') {
+            input.value = '';
+        }
+    }
+
+    function getUnformattedValue(id) {
+        const val = document.getElementById(id).value.replace(/,/g, '');
+        return parseFloat(val);
+    }
+
+    function toggleMenu(menuType) {
+        if (menuType === 'skip') {
+            isSkipOpen = !isSkipOpen;
+            const container = document.getElementById('skipContainer');
+            const arrow = document.getElementById('skipArrow');
+            container.classList.toggle('open', isSkipOpen);
+            arrow.classList.toggle('open', isSkipOpen);
+        } else if (menuType === 'unequal') {
+            isUnequalOpen = !isUnequalOpen;
+            const container = document.getElementById('unequalContainer');
+            const arrow = document.getElementById('unequalArrow');
+            container.classList.toggle('open', isUnequalOpen);
+            arrow.classList.toggle('open', isUnequalOpen);
+        }
+    }
+
+    function renderPayButtons() {
+        const payGrid = document.getElementById('payGrid');
+        payGrid.innerHTML = '';
+
+        baseTotalMonths.forEach((totalMonths, index) => {
+            const actualPayCount = totalMonths - currentSkipMonths;
+            const btn = document.createElement('button');
+            btn.className = 'btn-pay' + (index === selectedIndex ? ' active' : '');
+            
+            if (actualPayCount <= 0 || actualPayCount <= currentUnequalMonths) {
+                btn.innerText = '不可';
+                btn.disabled = true;
+                btn.style.opacity = '0.3';
+                btn.style.cursor = 'not-allowed';
+            } else {
+                if (currentSkipMonths > 0) {
+                    btn.innerHTML = `${actualPayCount}回<span class="base-count">(${totalMonths}回)</span>`;
+                } else {
+                    btn.innerText = actualPayCount + '回';
+                }
+                btn.onclick = () => selectPayIndex(index);
+            }
+            
+            payGrid.appendChild(btn);
+        });
+    }
+
+    function selectSkip(months) {
+        currentSkipMonths = months;
+        document.getElementById('skipStatusText').innerText = months === 0 ? 'なし' : `${months}ヶ月`;
+
+        document.querySelectorAll('.btn-skip').forEach((btn, idx) => {
+            btn.classList.toggle('active', idx === months);
+        });
+
+        renderPayButtons();
+        calculate();
+    }
+
+    function selectUnequalMonths(months) {
+        currentUnequalMonths = months;
+        document.getElementById('unequalStatusText').innerText = months === 0 ? 'なし' : `${months}ヶ月`;
+        document.getElementById('unequalAmountWrapper').style.display = months > 0 ? 'block' : 'none';
+
+        document.querySelectorAll('.btn-unequal').forEach((btn, idx) => {
+            btn.classList.toggle('active', idx === months);
+        });
+
+        renderPayButtons();
+        calculate();
+    }
+
+    function selectPayIndex(index) {
+        selectedIndex = index;
+        renderPayButtons();
+        calculate();
+    }
+
+    function calculate() {
+        const amount = getUnformattedValue('amount');
+        const rate = parseFloat(document.getElementById('feeRate').value) || 0;
+        
+        const totalDuration = baseTotalMonths[selectedIndex];
+        const payCount = totalDuration - currentSkipMonths;
+        const skip = currentSkipMonths;
+        const uMonths = currentUnequalMonths;
+        const uAmount = getUnformattedValue('unequalAmount') || 0;
+
+        const infoBadge = document.getElementById('infoBadge');
+        let badgeMessages = [];
+
+        if (skip > 0) {
+            badgeMessages.push(`【スキップ】 お支払い開始：${skip + 1}ヶ月目から`);
+        }
+        if (uMonths > 0) {
+            badgeMessages.push(`【不均等払い】 開始${uMonths}ヶ月間：月々 ${uAmount.toLocaleString()} 円 × ${uMonths}回`);
+        }
+
+        if (badgeMessages.length > 0) {
+            infoBadge.style.display = 'block';
+            infoBadge.innerHTML = badgeMessages.join('<br>');
+        } else {
+            infoBadge.style.display = 'none';
+        }
+
+        const unequalRow = document.getElementById('unequalResultRow');
+        const adjustedRow = document.getElementById('adjustedResultRow');
+        const firstPayRow = document.getElementById('firstPayRow');
+        const monthlyLabel = document.getElementById('monthlyResultLabel');
+
+        if (isNaN(amount) || amount <= 0 || payCount <= 0 || payCount <= uMonths) {
+            document.getElementById('principalPay').innerHTML = '0 <span>円</span>';
+            document.getElementById('feePay').innerHTML = '0 <span>円</span>';
+            document.getElementById('monthlyPay').innerHTML = '0 <span>円</span>';
+            document.getElementById('firstPay').innerHTML = '0 <span>円</span>';
+            document.getElementById('adjustedPay').innerHTML = '0 <span>円</span>';
+            document.getElementById('unequalPay').innerHTML = '0 <span>円</span>';
+            document.getElementById('totalPay').innerHTML = '0 <span>円</span>';
+            unequalRow.style.display = 'none';
+            adjustedRow.style.display = 'none';
+            firstPayRow.style.display = 'flex';
+            monthlyLabel.innerText = '2回目以降（月々）';
+            return;
+        }
+
+        const totalFee = amount * (rate / 100) * (totalDuration / 12);
+        const totalAmount = amount + totalFee;
+
+        document.getElementById('principalPay').innerHTML = Math.round(amount).toLocaleString() + ' <span>円</span>';
+        document.getElementById('feePay').innerHTML = Math.round(totalFee).toLocaleString() + ' <span>円</span>';
+        document.getElementById('totalPay').innerHTML = Math.round(totalAmount).toLocaleString() + ' <span>円</span>';
+
+        if (uMonths > 0) {
+            // 不均等払いあり: 「初回お支払額」行を隠して不均等用行を表示
+            firstPayRow.style.display = 'none';
+            unequalRow.style.display = 'flex';
+
+            const startMonth = skip + 1;
+            const endMonth = skip + uMonths;
+            document.getElementById('unequalResultLabel').innerText = `${startMonth}〜${endMonth}ヶ月目（特別額）`;
+            document.getElementById('unequalPay').innerHTML = `${uAmount.toLocaleString()} <span>円 × ${uMonths}回</span>`;
+
+            const totalUnequalPay = uAmount * uMonths;
+            const remainingTotal = totalAmount - totalUnequalPay;
+            const remainingCounts = payCount - uMonths; // 残り回数
+
+            if (remainingCounts <= 0) {
+                adjustedRow.style.display = 'none';
+                monthlyLabel.innerText = '残額';
+                document.getElementById('monthlyPay').innerHTML = `0 <span>円</span>`;
+                return;
+            }
+
+            const rawMonthly = remainingTotal / remainingCounts;
+            const monthly = Math.floor(rawMonthly / 100) * 100;
+            const regularPayCounts = remainingCounts - 1; // 調整月以外の残り回数
+            const adjustedPayValue = Math.round(remainingTotal - (monthly * regularPayCounts));
+
+            const adjustedMonth = endMonth + 1;
+            const regularStartMonth = endMonth + 2;
+
+            if (regularPayCounts > 0) {
+                adjustedRow.style.display = 'flex';
+                document.getElementById('adjustedResultLabel').innerText = `${adjustedMonth}ヶ月目`;
+                document.getElementById('adjustedPay').innerHTML = `${adjustedPayValue.toLocaleString()} <span>円 × 1回</span>`;
+
+                monthlyLabel.innerText = `${regularStartMonth}ヶ月目以降（月々）`;
+                document.getElementById('monthlyPay').innerHTML = `${monthly.toLocaleString()} <span>円 × ${regularPayCounts}回</span>`;
+            } else {
+                adjustedRow.style.display = 'flex';
+                document.getElementById('adjustedResultLabel').innerText = `${adjustedMonth}ヶ月目`;
+                document.getElementById('adjustedPay').innerHTML = `${adjustedPayValue.toLocaleString()} <span>円 × 1回</span>`;
+
+                monthlyLabel.innerText = 'それ以降';
+                document.getElementById('monthlyPay').innerHTML = `0 <span>円</span>`;
+            }
+
+        } else {
+            // 不均等払いなし: 標準表示
+            unequalRow.style.display = 'none';
+            adjustedRow.style.display = 'none';
+            firstPayRow.style.display = 'flex';
+
+            const rawMonthly = totalAmount / payCount;
+            const monthly = Math.floor(rawMonthly / 100) * 100;
+            const first = Math.round(totalAmount - (monthly * (payCount - 1)));
+            const regularPayCounts = payCount - 1;
+
+            monthlyLabel.innerText = '2回目以降（月々）';
+            document.getElementById('monthlyPay').innerHTML = `${monthly.toLocaleString()} <span>円 × ${regularPayCounts}回</span>`;
+            document.getElementById('firstPay').innerHTML = first.toLocaleString() + ' <span>円</span>';
+        }
+    }
+
+    ['amount', 'unequalAmount'].forEach(id => {
+        const input = document.getElementById(id);
+        input.addEventListener('input', () => {
+            formatNumberInput(input);
+            calculate();
+        });
+    });
+
+    document.getElementById('feeRate').addEventListener('input', calculate);
+
+    renderPayButtons();
+    calculate();
+</script>
+
+</body>
+</html>
