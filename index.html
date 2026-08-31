@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KAKEHI CREDIT シミュレーター v1.7.0</title>
+    <title>KAKEHI CREDIT シミュレーター v1.12.0</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -33,7 +33,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 20px 20px 40px;
         }
 
         .container {
@@ -44,11 +44,42 @@
             border-radius: 16px;
             padding: 36px 28px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            position: relative;
         }
 
         .header {
             text-align: center;
             margin-bottom: 28px;
+            position: relative;
+        }
+
+        /* 画面右上のアイコンボタン群 */
+        .action-buttons {
+            position: absolute;
+            top: -16px;
+            right: -10px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--accent-gold);
+            border-radius: 8px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: rgba(197, 160, 89, 0.1);
+            border-color: var(--accent-gold);
+            color: var(--accent-gold-light);
         }
 
         .header .brand {
@@ -92,6 +123,22 @@
             font-size: 15px;
         }
 
+        .select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        
+        .select-wrapper::after {
+            content: '▼';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
         input[type="text"], input[type="number"], select {
             width: 100%;
             background: var(--input-bg);
@@ -102,6 +149,13 @@
             border-radius: 8px;
             outline: none;
             transition: all 0.3s ease;
+        }
+
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            cursor: pointer;
         }
 
         input[type="text"]:focus, input[type="number"]:focus, select:focus {
@@ -116,7 +170,7 @@
             margin-top: 6px;
         }
 
-        .btn-pay, .btn-skip, .btn-unequal {
+        .btn-skip, .btn-unequal {
             background: var(--input-bg);
             border: 1px solid var(--border-color);
             color: var(--text-secondary);
@@ -132,28 +186,16 @@
             line-height: 1.2;
         }
 
-        .btn-pay .base-count {
-            font-size: 10px;
-            opacity: 0.75;
-            margin-left: 2px;
-            font-weight: normal;
-        }
-
-        .btn-pay:hover, .btn-skip:hover, .btn-unequal:hover {
+        .btn-skip:hover, .btn-unequal:hover {
             border-color: var(--accent-gold);
             color: var(--text-primary);
         }
 
-        .btn-pay.active, .btn-skip.active, .btn-unequal.active {
+        .btn-skip.active, .btn-unequal.active {
             background: var(--accent-gold);
             color: #0f1115;
             border-color: var(--accent-gold);
             font-weight: 700;
-        }
-
-        .btn-pay.active .base-count {
-            color: #0f1115;
-            opacity: 0.85;
         }
 
         .toggle-bar {
@@ -205,7 +247,7 @@
         }
 
         .collapsible-container.open {
-            max-height: 200px;
+            max-height: 450px; /* ボーナス用の拡充 */
             opacity: 1;
             margin-top: 10px;
         }
@@ -272,12 +314,160 @@
             text-align: center;
             line-height: 1.5;
         }
+
+        /* モーダル用CSS */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 28px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-content h3 {
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .modal-content input[type="text"] {
+            padding-left: 16px;
+            margin-bottom: 24px;
+        }
+
+        .btn-cancel, .btn-primary {
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel {
+            background: var(--input-bg);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-cancel:hover {
+            color: var(--text-primary);
+            border-color: var(--text-secondary);
+        }
+
+        .btn-primary {
+            background: var(--accent-gold);
+            color: #0f1115;
+            font-weight: bold;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-gold-light);
+        }
+
+        .list-item {
+            padding: 14px 12px;
+            border-bottom: 1px dashed var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item-name {
+            font-size: 15px;
+            color: var(--text-primary);
+        }
+
+        .item-date {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .item-btn {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .item-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--accent-gold);
+        }
+
+        .item-btn.delete {
+            color: #e06c75;
+            border-color: rgba(224, 108, 117, 0.3);
+        }
+        
+        .item-btn.delete:hover {
+            background: rgba(224, 108, 117, 0.1);
+            border-color: #e06c75;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
+        <div class="action-buttons">
+            <!-- 保存ボタン -->
+            <button class="icon-btn" onclick="openSaveModal()" title="結果を保存">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+            </button>
+            <!-- 読出しボタン -->
+            <button class="icon-btn" onclick="openListModal()" title="保存データ一覧">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                </svg>
+            </button>
+            <!-- QRコード表示ボタン -->
+            <button class="icon-btn" onclick="openQrModal()" title="QRコードで共有">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+            </button>
+        </div>
         <div class="brand">Credit Payment Simulator</div>
         <h1>KAKEHI CREDIT</h1>
     </div>
@@ -343,10 +533,75 @@
         </div>
     </div>
 
-    <!-- 分割回数 -->
+    <!-- ボーナス払い -->
     <div class="form-group">
-        <label class="label">分割回数（カッコ内は元のコース枠）</label>
-        <div class="grid-options" id="payGrid">
+        <div class="toggle-bar" onclick="toggleMenu('bonus')">
+            <span class="toggle-title">ボーナス払いを設定する</span>
+            <span class="toggle-status">
+                <span id="bonusStatusText">なし</span>
+                <span class="arrow-icon" id="bonusArrow">▼</span>
+            </span>
+        </div>
+        <div class="collapsible-container" id="bonusContainer">
+            <div style="margin-top: 10px; margin-bottom: 12px;">
+                <label class="label" for="startMonth">初回お支払い月 (※回数計算用)</label>
+                <div class="select-wrapper">
+                    <select id="startMonth" onchange="calculate()">
+                        <option value="1">1月</option>
+                        <option value="2">2月</option>
+                        <option value="3">3月</option>
+                        <option value="4">4月</option>
+                        <option value="5">5月</option>
+                        <option value="6">6月</option>
+                        <option value="7">7月</option>
+                        <option value="8">8月</option>
+                        <option value="9">9月</option>
+                        <option value="10">10月</option>
+                        <option value="11">11月</option>
+                        <option value="12">12月</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                <div style="flex: 1;">
+                    <label class="label">夏のボーナス</label>
+                    <div class="select-wrapper">
+                        <select id="summerBonus" onchange="calculate()">
+                            <option value="0">なし</option>
+                            <option value="6">6月</option>
+                            <option value="7">7月</option>
+                            <option value="8">8月</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="flex: 1;">
+                    <label class="label">冬のボーナス</label>
+                    <div class="select-wrapper">
+                        <select id="winterBonus" onchange="calculate()">
+                            <option value="0">なし</option>
+                            <option value="12">12月</option>
+                            <option value="1">1月</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 4px;">
+                <label class="label" for="bonusAmount">ボーナス月加算額</label>
+                <div class="input-wrapper">
+                    <input type="text" id="bonusAmount" inputmode="numeric" placeholder="例: 30,000" value="">
+                    <span class="unit">円</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 分割回数 (プルダウン) -->
+    <div class="form-group">
+        <label class="label" for="paySelect">分割回数</label>
+        <div class="select-wrapper">
+            <select id="paySelect" onchange="selectPayDropdown()"></select>
         </div>
     </div>
 
@@ -392,6 +647,12 @@
             <div class="result-label" id="monthlyResultLabel">2回目以降（月々）</div>
             <div class="result-value highlight" id="monthlyPay">0 <span>円</span></div>
         </div>
+        
+        <!-- ボーナス加算額 -->
+        <div id="bonusResultRow" class="result-row" style="display: none;">
+            <div class="result-label">ボーナス月加算額</div>
+            <div class="result-value" id="bonusPay" style="color: var(--accent-gold-light);">0 <span>円</span></div>
+        </div>
 
         <!-- 分割手数料 -->
         <div class="result-row">
@@ -408,19 +669,281 @@
 
     <div class="note">
         ※ 月々のお支払額は100円単位（100円未満切り捨て）で算出しています。<br>
+        ※ ボーナス月は、通常の月々支払額（初回・不均等含む）に加算されます。<br>
         ※ 端数は特別額または初回お支払額直後の支払額に加算されます。
     </div>
 </div>
 
+<!-- 保存用モーダル -->
+<div class="modal-overlay" id="saveModal" style="display: none;">
+    <div class="modal-content">
+        <h3>シミュレーション結果の保存</h3>
+        <label class="label" for="customerName">お客様のお名前</label>
+        <input type="text" id="customerName" placeholder="例: 山田 太郎">
+        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+            <button class="btn-cancel" onclick="closeSaveModal()">キャンセル</button>
+            <button class="btn-primary" id="btnSaveUpdate" style="display: none;" onclick="executeSave(true)">上書き保存</button>
+            <button class="btn-primary" id="btnSaveNew" onclick="executeSave(false)">新しく保存</button>
+        </div>
+    </div>
+</div>
+
+<!-- 読出し・一覧用モーダル -->
+<div class="modal-overlay" id="listModal" style="display: none;">
+    <div class="modal-content" style="max-height: 85vh; display: flex; flex-direction: column;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h3 style="margin: 0;">保存データ一覧</h3>
+            <span style="cursor: pointer; font-size: 24px; color: var(--text-secondary); line-height: 1;" onclick="closeListModal()">&times;</span>
+        </div>
+        <div id="savedDataList" style="overflow-y: auto; flex: 1; padding-right: 4px;">
+            <!-- リストがここに動的に生成されます -->
+        </div>
+    </div>
+</div>
+
+<!-- QRコード共有用モーダル -->
+<div class="modal-overlay" id="qrModal" style="display: none;">
+    <div class="modal-content" style="text-align: center;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h3 style="margin: 0; text-align: left;">計算結果の共有</h3>
+            <span style="cursor: pointer; font-size: 24px; color: var(--text-secondary); line-height: 1;" onclick="closeQrModal()">&times;</span>
+        </div>
+        <div style="background: #fff; padding: 16px; border-radius: 8px; display: inline-block; margin-bottom: 16px;">
+            <img id="qrImage" src="" alt="QR Code" width="180" height="180" style="display: block;">
+        </div>
+        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.5; text-align: center;">
+            お客様のスマートフォンで読み取ると、<br>現在の計算結果がテキストで表示されます。
+        </p>
+        <button class="btn-cancel" style="width: 100%;" onclick="closeQrModal()">閉じる</button>
+    </div>
+</div>
+
 <script>
-    const baseTotalMonths = [3, 6, 10, 12, 18, 24, 36, 48];
-    let selectedIndex = 3; 
+    const STORAGE_KEY = 'kakehi_credit_data';
+    let currentEditingId = null;
+
+    let selectedTotalDuration = 12;
     let currentSkipMonths = 0;
     let currentUnequalMonths = 0;
 
     let isSkipOpen = false;
     let isUnequalOpen = false;
+    let isBonusOpen = false;
 
+    // ----- 初期設定（翌月をデフォルトのお支払い開始月にする） -----
+    const now = new Date();
+    let nextMonth = now.getMonth() + 2; 
+    if (nextMonth > 12) nextMonth -= 12;
+    document.getElementById('startMonth').value = nextMonth;
+
+    // ----- ローカルストレージCRUD処理 -----
+    function getSavedData() {
+        const data = localStorage.getItem(STORAGE_KEY);
+        return data ? JSON.parse(data) : [];
+    }
+
+    function saveToStorage(dataArr) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(dataArr));
+    }
+
+    // ----- モーダル開閉制御 -----
+    function openSaveModal() {
+        document.getElementById('saveModal').style.display = 'flex';
+        const nameInput = document.getElementById('customerName');
+        const btnUpdate = document.getElementById('btnSaveUpdate');
+        
+        if (currentEditingId) {
+            const savedData = getSavedData();
+            const item = savedData.find(d => d.id === currentEditingId);
+            if (item) {
+                nameInput.value = item.name;
+            }
+            btnUpdate.style.display = 'inline-block';
+        } else {
+            nameInput.value = '';
+            btnUpdate.style.display = 'none';
+        }
+        nameInput.focus();
+    }
+
+    function closeSaveModal() {
+        document.getElementById('saveModal').style.display = 'none';
+    }
+
+    function openListModal() {
+        renderList();
+        document.getElementById('listModal').style.display = 'flex';
+    }
+
+    function closeListModal() {
+        document.getElementById('listModal').style.display = 'none';
+    }
+
+    function openQrModal() {
+        const amount = getUnformattedValue('amount');
+        if (isNaN(amount) || amount <= 0) {
+            alert('利用金額を入力して計算結果を出力してください。');
+            return;
+        }
+
+        let summary = '【KAKEHI CREDIT お見積り内容】\n\n';
+        summary += 'ご利用金額: ' + document.getElementById('principalPay').innerText + '\n';
+        
+        if (currentUnequalMonths > 0) {
+            summary += document.getElementById('unequalResultLabel').innerText + ': ' + document.getElementById('unequalPay').innerText + '\n';
+            if (document.getElementById('adjustedResultRow').style.display !== 'none') {
+                summary += document.getElementById('adjustedResultLabel').innerText + ': ' + document.getElementById('adjustedPay').innerText + '\n';
+            }
+        } else {
+            summary += '初回お支払額: ' + document.getElementById('firstPay').innerText + '\n';
+        }
+
+        summary += document.getElementById('monthlyResultLabel').innerText + ': ' + document.getElementById('monthlyPay').innerText + '\n';
+        
+        if (document.getElementById('bonusResultRow').style.display !== 'none') {
+            summary += 'ボーナス月加算額: ' + document.getElementById('bonusPay').innerText + '\n';
+        }
+
+        summary += '分割手数料: ' + document.getElementById('feePay').innerText + '\n';
+        summary += 'お支払総額: ' + document.getElementById('totalPay').innerText;
+
+        const encoded = encodeURIComponent(summary);
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encoded}&margin=10`;
+        
+        document.getElementById('qrImage').src = qrUrl;
+        document.getElementById('qrModal').style.display = 'flex';
+    }
+
+    function closeQrModal() {
+        document.getElementById('qrModal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        const saveModal = document.getElementById('saveModal');
+        const listModal = document.getElementById('listModal');
+        const qrModal = document.getElementById('qrModal');
+        if (event.target === saveModal) closeSaveModal();
+        if (event.target === listModal) closeListModal();
+        if (event.target === qrModal) closeQrModal();
+    }
+
+    // ----- 保存・読出し実行処理 -----
+    function executeSave(isUpdate) {
+        const name = document.getElementById('customerName').value.trim();
+        if (!name) {
+            alert('お客様のお名前を入力してください。');
+            return;
+        }
+
+        const currentData = {
+            amount: document.getElementById('amount').value,
+            skipMonths: currentSkipMonths,
+            unequalMonths: currentUnequalMonths,
+            unequalAmount: document.getElementById('unequalAmount').value,
+            startMonth: document.getElementById('startMonth').value,
+            summerBonus: document.getElementById('summerBonus').value,
+            winterBonus: document.getElementById('winterBonus').value,
+            bonusAmount: document.getElementById('bonusAmount').value,
+            totalDuration: selectedTotalDuration,
+            feeRate: document.getElementById('feeRate').value
+        };
+
+        let savedData = getSavedData();
+        const d = new Date();
+        const dateString = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+
+        if (isUpdate && currentEditingId) {
+            const index = savedData.findIndex(x => x.id === currentEditingId);
+            if (index !== -1) {
+                savedData[index].name = name;
+                savedData[index].date = dateString;
+                savedData[index].data = currentData;
+            }
+        } else {
+            const newItem = {
+                id: Date.now(),
+                name: name,
+                date: dateString,
+                data: currentData
+            };
+            savedData.unshift(newItem); 
+            currentEditingId = newItem.id;
+        }
+
+        saveToStorage(savedData);
+        closeSaveModal();
+        alert('保存しました。');
+    }
+
+    function renderList() {
+        const listContainer = document.getElementById('savedDataList');
+        const savedData = getSavedData();
+        listContainer.innerHTML = '';
+
+        if (savedData.length === 0) {
+            listContainer.innerHTML = '<div style="color: var(--text-secondary); font-size: 13px; padding: 12px 0; text-align: center;">保存されたデータはありません。</div>';
+            return;
+        }
+
+        savedData.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'list-item';
+            div.innerHTML = `
+                <div class="item-info">
+                    <div class="item-name">${item.name} 様</div>
+                    <div class="item-date">${item.date}</div>
+                </div>
+                <div class="item-actions">
+                    <button class="item-btn" onclick="loadData(${item.id})">読込</button>
+                    <button class="item-btn delete" onclick="deleteData(${item.id})">削除</button>
+                </div>
+            `;
+            listContainer.appendChild(div);
+        });
+    }
+
+    function loadData(id) {
+        const savedData = getSavedData();
+        const item = savedData.find(d => d.id === id);
+        if (!item) return;
+
+        document.getElementById('amount').value = item.data.amount;
+        document.getElementById('unequalAmount').value = item.data.unequalAmount;
+        document.getElementById('feeRate').value = item.data.feeRate;
+        
+        if(item.data.startMonth) document.getElementById('startMonth').value = item.data.startMonth;
+        if(item.data.summerBonus) document.getElementById('summerBonus').value = item.data.summerBonus;
+        if(item.data.winterBonus) document.getElementById('winterBonus').value = item.data.winterBonus;
+        if(item.data.bonusAmount) document.getElementById('bonusAmount').value = item.data.bonusAmount;
+        
+        selectSkip(item.data.skipMonths);
+        selectUnequalMonths(item.data.unequalMonths);
+        
+        selectedTotalDuration = item.data.totalDuration;
+        renderPayDropdown();
+        
+        currentEditingId = id; 
+        
+        if (currentSkipMonths > 0 && !isSkipOpen) toggleMenu('skip');
+        if (currentUnequalMonths > 0 && !isUnequalOpen) toggleMenu('unequal');
+        
+        const hasBonus = parseInt(item.data.summerBonus) > 0 || parseInt(item.data.winterBonus) > 0 || item.data.bonusAmount;
+        if (hasBonus && !isBonusOpen) toggleMenu('bonus');
+
+        calculate();
+        closeListModal();
+    }
+
+    function deleteData(id) {
+        if (!confirm('このデータを削除してもよろしいですか？')) return;
+        let savedData = getSavedData();
+        savedData = savedData.filter(d => d.id !== id);
+        saveToStorage(savedData);
+        if (currentEditingId === id) currentEditingId = null;
+        renderList();
+    }
+
+    // ----- 計算関連ロジック -----
     function formatNumberInput(input) {
         const value = input.value.replace(/,/g, '');
         if (!isNaN(value) && value !== '') {
@@ -438,55 +961,64 @@
     function toggleMenu(menuType) {
         if (menuType === 'skip') {
             isSkipOpen = !isSkipOpen;
-            const container = document.getElementById('skipContainer');
-            const arrow = document.getElementById('skipArrow');
-            container.classList.toggle('open', isSkipOpen);
-            arrow.classList.toggle('open', isSkipOpen);
+            document.getElementById('skipContainer').classList.toggle('open', isSkipOpen);
+            document.getElementById('skipArrow').classList.toggle('open', isSkipOpen);
         } else if (menuType === 'unequal') {
             isUnequalOpen = !isUnequalOpen;
-            const container = document.getElementById('unequalContainer');
-            const arrow = document.getElementById('unequalArrow');
-            container.classList.toggle('open', isUnequalOpen);
-            arrow.classList.toggle('open', isUnequalOpen);
+            document.getElementById('unequalContainer').classList.toggle('open', isUnequalOpen);
+            document.getElementById('unequalArrow').classList.toggle('open', isUnequalOpen);
+        } else if (menuType === 'bonus') {
+            isBonusOpen = !isBonusOpen;
+            document.getElementById('bonusContainer').classList.toggle('open', isBonusOpen);
+            document.getElementById('bonusArrow').classList.toggle('open', isBonusOpen);
         }
     }
 
-    function renderPayButtons() {
-        const payGrid = document.getElementById('payGrid');
-        payGrid.innerHTML = '';
+    function renderPayDropdown() {
+        const paySelect = document.getElementById('paySelect');
+        paySelect.innerHTML = '';
 
-        baseTotalMonths.forEach((totalMonths, index) => {
-            const actualPayCount = totalMonths - currentSkipMonths;
-            const btn = document.createElement('button');
-            btn.className = 'btn-pay' + (index === selectedIndex ? ' active' : '');
+        for (let i = 1; i <= 60; i++) {
+            const actualPayCount = i - currentSkipMonths;
+            const option = document.createElement('option');
+            option.value = i;
             
             if (actualPayCount <= 0 || actualPayCount <= currentUnequalMonths) {
-                btn.innerText = '不可';
-                btn.disabled = true;
-                btn.style.opacity = '0.3';
-                btn.style.cursor = 'not-allowed';
+                option.disabled = true;
+                option.text = `${i}回（設定不可）`;
             } else {
                 if (currentSkipMonths > 0) {
-                    btn.innerHTML = `${actualPayCount}回<span class="base-count">(${totalMonths}回)</span>`;
+                    option.text = `${i}回（実質支払 ${actualPayCount}回）`;
                 } else {
-                    btn.innerText = actualPayCount + '回';
+                    option.text = `${i}回`;
                 }
-                btn.onclick = () => selectPayIndex(index);
             }
             
-            payGrid.appendChild(btn);
-        });
+            if (i === selectedTotalDuration) {
+                option.selected = true;
+            }
+            
+            paySelect.appendChild(option);
+        }
+
+        if (paySelect.options[paySelect.selectedIndex] && paySelect.options[paySelect.selectedIndex].disabled) {
+            for (let i = 0; i < paySelect.options.length; i++) {
+                if (!paySelect.options[i].disabled) {
+                    paySelect.selectedIndex = i;
+                    selectedTotalDuration = parseInt(paySelect.options[i].value);
+                    break;
+                }
+            }
+        }
     }
 
     function selectSkip(months) {
         currentSkipMonths = months;
         document.getElementById('skipStatusText').innerText = months === 0 ? 'なし' : `${months}ヶ月`;
-
         document.querySelectorAll('.btn-skip').forEach((btn, idx) => {
             btn.classList.toggle('active', idx === months);
         });
-
-        renderPayButtons();
+        renderPayDropdown();
         calculate();
     }
 
@@ -494,18 +1026,16 @@
         currentUnequalMonths = months;
         document.getElementById('unequalStatusText').innerText = months === 0 ? 'なし' : `${months}ヶ月`;
         document.getElementById('unequalAmountWrapper').style.display = months > 0 ? 'block' : 'none';
-
         document.querySelectorAll('.btn-unequal').forEach((btn, idx) => {
             btn.classList.toggle('active', idx === months);
         });
-
-        renderPayButtons();
+        renderPayDropdown();
         calculate();
     }
 
-    function selectPayIndex(index) {
-        selectedIndex = index;
-        renderPayButtons();
+    function selectPayDropdown() {
+        const paySelect = document.getElementById('paySelect');
+        selectedTotalDuration = parseInt(paySelect.value);
         calculate();
     }
 
@@ -513,11 +1043,34 @@
         const amount = getUnformattedValue('amount');
         const rate = parseFloat(document.getElementById('feeRate').value) || 0;
         
-        const totalDuration = baseTotalMonths[selectedIndex];
+        const totalDuration = selectedTotalDuration;
         const payCount = totalDuration - currentSkipMonths;
         const skip = currentSkipMonths;
         const uMonths = currentUnequalMonths;
         const uAmount = getUnformattedValue('unequalAmount') || 0;
+
+        const startMonth = parseInt(document.getElementById('startMonth').value) || 1;
+        const summerBonus = parseInt(document.getElementById('summerBonus').value) || 0;
+        const winterBonus = parseInt(document.getElementById('winterBonus').value) || 0;
+        const bAmount = getUnformattedValue('bonusAmount') || 0;
+
+        let bonusCount = 0;
+        if (payCount > 0) {
+            for (let i = 0; i < payCount; i++) {
+                let currentMonth = ((startMonth - 1 + i) % 12) + 1;
+                if (currentMonth === summerBonus || currentMonth === winterBonus) {
+                    bonusCount++;
+                }
+            }
+        }
+        const totalBonusPay = bAmount * bonusCount;
+
+        const bonusStatusText = document.getElementById('bonusStatusText');
+        if (bAmount > 0 && (summerBonus > 0 || winterBonus > 0)) {
+            bonusStatusText.innerText = '設定あり';
+        } else {
+            bonusStatusText.innerText = 'なし';
+        }
 
         const infoBadge = document.getElementById('infoBadge');
         let badgeMessages = [];
@@ -527,6 +1080,13 @@
         }
         if (uMonths > 0) {
             badgeMessages.push(`【不均等払い】 開始${uMonths}ヶ月間：月々 ${uAmount.toLocaleString()} 円 × ${uMonths}回`);
+        }
+        if (bAmount > 0) {
+            if (bonusCount > 0) {
+                badgeMessages.push(`【ボーナス払い】 期間中に ${bonusCount} 回加算`);
+            } else if (summerBonus > 0 || winterBonus > 0) {
+                badgeMessages.push(`【ボーナス払い】 ※指定期間内にボーナス月が含まれません`);
+            }
         }
 
         if (badgeMessages.length > 0) {
@@ -539,6 +1099,7 @@
         const unequalRow = document.getElementById('unequalResultRow');
         const adjustedRow = document.getElementById('adjustedResultRow');
         const firstPayRow = document.getElementById('firstPayRow');
+        const bonusRow = document.getElementById('bonusResultRow');
         const monthlyLabel = document.getElementById('monthlyResultLabel');
 
         if (isNaN(amount) || amount <= 0 || payCount <= 0 || payCount <= uMonths) {
@@ -551,6 +1112,7 @@
             document.getElementById('totalPay').innerHTML = '0 <span>円</span>';
             unequalRow.style.display = 'none';
             adjustedRow.style.display = 'none';
+            bonusRow.style.display = 'none';
             firstPayRow.style.display = 'flex';
             monthlyLabel.innerText = '2回目以降（月々）';
             return;
@@ -558,24 +1120,37 @@
 
         const totalFee = amount * (rate / 100) * (totalDuration / 12);
         const totalAmount = amount + totalFee;
+        const totalUnequalPay = uAmount * uMonths;
+        const remainingTotal = totalAmount - totalUnequalPay - totalBonusPay;
 
         document.getElementById('principalPay').innerHTML = Math.round(amount).toLocaleString() + ' <span>円</span>';
         document.getElementById('feePay').innerHTML = Math.round(totalFee).toLocaleString() + ' <span>円</span>';
         document.getElementById('totalPay').innerHTML = Math.round(totalAmount).toLocaleString() + ' <span>円</span>';
 
+        if (bAmount > 0 && bonusCount > 0) {
+            bonusRow.style.display = 'flex';
+            document.getElementById('bonusPay').innerHTML = `${bAmount.toLocaleString()} <span>円 × ${bonusCount}回</span>`;
+        } else {
+            bonusRow.style.display = 'none';
+        }
+
+        if (remainingTotal < 0) {
+            document.getElementById('monthlyPay').innerHTML = `<span style="font-size: 14px; color: #e06c75;">※加算額・特別額が総額を超過</span>`;
+            document.getElementById('firstPay').innerHTML = '0 <span>円</span>';
+            document.getElementById('adjustedPay').innerHTML = '0 <span>円</span>';
+            return;
+        }
+
         if (uMonths > 0) {
-            // 不均等払いあり: 「初回お支払額」行を隠して不均等用行を表示
             firstPayRow.style.display = 'none';
             unequalRow.style.display = 'flex';
 
-            const startMonth = skip + 1;
-            const endMonth = skip + uMonths;
-            document.getElementById('unequalResultLabel').innerText = `${startMonth}〜${endMonth}ヶ月目（特別額）`;
+            const startMonthIdx = skip + 1;
+            const endMonthIdx = skip + uMonths;
+            document.getElementById('unequalResultLabel').innerText = `${startMonthIdx}〜${endMonthIdx}ヶ月目（特別額）`;
             document.getElementById('unequalPay').innerHTML = `${uAmount.toLocaleString()} <span>円 × ${uMonths}回</span>`;
 
-            const totalUnequalPay = uAmount * uMonths;
-            const remainingTotal = totalAmount - totalUnequalPay;
-            const remainingCounts = payCount - uMonths; // 残り回数
+            const remainingCounts = payCount - uMonths; 
 
             if (remainingCounts <= 0) {
                 adjustedRow.style.display = 'none';
@@ -586,11 +1161,11 @@
 
             const rawMonthly = remainingTotal / remainingCounts;
             const monthly = Math.floor(rawMonthly / 100) * 100;
-            const regularPayCounts = remainingCounts - 1; // 調整月以外の残り回数
+            const regularPayCounts = remainingCounts - 1; 
             const adjustedPayValue = Math.round(remainingTotal - (monthly * regularPayCounts));
 
-            const adjustedMonth = endMonth + 1;
-            const regularStartMonth = endMonth + 2;
+            const adjustedMonth = endMonthIdx + 1;
+            const regularStartMonth = endMonthIdx + 2;
 
             if (regularPayCounts > 0) {
                 adjustedRow.style.display = 'flex';
@@ -609,14 +1184,13 @@
             }
 
         } else {
-            // 不均等払いなし: 標準表示
             unequalRow.style.display = 'none';
             adjustedRow.style.display = 'none';
             firstPayRow.style.display = 'flex';
 
-            const rawMonthly = totalAmount / payCount;
+            const rawMonthly = remainingTotal / payCount;
             const monthly = Math.floor(rawMonthly / 100) * 100;
-            const first = Math.round(totalAmount - (monthly * (payCount - 1)));
+            const first = Math.round(remainingTotal - (monthly * (payCount - 1)));
             const regularPayCounts = payCount - 1;
 
             monthlyLabel.innerText = '2回目以降（月々）';
@@ -625,7 +1199,7 @@
         }
     }
 
-    ['amount', 'unequalAmount'].forEach(id => {
+    ['amount', 'unequalAmount', 'bonusAmount'].forEach(id => {
         const input = document.getElementById(id);
         input.addEventListener('input', () => {
             formatNumberInput(input);
@@ -635,7 +1209,8 @@
 
     document.getElementById('feeRate').addEventListener('input', calculate);
 
-    renderPayButtons();
+    // 初期化
+    renderPayDropdown();
     calculate();
 </script>
 
